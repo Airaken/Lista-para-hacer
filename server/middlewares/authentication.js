@@ -12,7 +12,7 @@ let validateToken = (req, res, next) => {
                 }
             })
         }
-        req.correo = decoded.correo;
+        req.id = decoded.id;
         next();
     });
 };

@@ -30,7 +30,7 @@ app.post('/login', (req, res) => {
     })
 });
 // this method returns to the user of the session
-app.get('/login/usuario', validateToken, (req, res) => {
+app.get('/login/user', validateToken, (req, res) => {
         let id = req.id;
         const sql = "SELECT * FROM usuarios WHERE id = '" + id + "'";
         client.query(sql, (err, response) => {
@@ -53,6 +53,7 @@ app.get('/logout', (req, res) => {
             ok: true,
             message: 'logout successful'
         });
+        client.end();
     })
     // exporte module
 module.exports = app;

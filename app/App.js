@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Login from './Login';
-import Main from './Main'
-import Loading from './Loading';
+import Board from './Board'
 import {render} from 'react-dom';
 import Signin from './Signin';
 
@@ -19,7 +18,7 @@ class App extends Component{
         fetch('/login/user')
             .then(res => res.json().then(data =>{
                 if(data.ok){
-                    this.setState({ route: 'main' })
+                    this.setState({ route: 'board' })
                 }else{
                     this.setState({ route: 'login' })
                 }
@@ -34,17 +33,14 @@ class App extends Component{
         let render=<Login callback={this.callback.bind(this)} />;
         // switch this.state.route for render components
         switch (this.state.route) {
-            case 'main':
-                render = <Main  callback={this.callback.bind(this)} />
+            case 'board':
+                render = <Board  callback={this.callback.bind(this)} />
                 break;
             case 'login':
                 render = <Login callback={this.callback.bind(this)} />
                 break;
             case 'signin':
                 render = <Signin callback={this.callback.bind(this)} />
-                break
-            case 'reload':
-                render = <Loading />
                 break
             default:
                 render = <Login callback={this.callback.bind(this)} />

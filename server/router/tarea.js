@@ -2,10 +2,9 @@ const express = require('express')
 const app = express();
 const client = require('../config/db')
 const { validateToken } = require('../middlewares/authentication');
-app.post('/task', validateToken, (req, res) => {
+app.post('/tarea', validateToken, (req, res) => {
     const sql = 'INSERT INTO tareas (titulo, descripcion, usuario_id) VALUES($1, $2, $3) RETURNING *';
     let id = req.id
-    console.log(id);
     const values = [req.body.titulo, req.body.descripcion, id]
     client.query(sql, values, (err, response) => {
         if (err) {
@@ -14,13 +13,12 @@ app.post('/task', validateToken, (req, res) => {
                 err
             });
         }
-        res.json({ ok: true, task: response.rows })
+        res.json({ ok: true, tasks: response.rows })
         console.log(response.rows);
-        client.end()
     });
 });
 
-app.get('/task', validateToken, (req, res) => {
+app.get('/tarea', validateToken, (req, res) => {
     let id = req.id
 
     const sql = "SELECT * FROM tareas WHERE usuario_id = '" + id + "'";
@@ -32,8 +30,7 @@ app.get('/task', validateToken, (req, res) => {
             });
         }
         console.log(response.rows);
-        res.json({ ok: true, task: response.rows })
-        client.end()
+        res.json({ ok: true, tasks: response.rows })
     });
 });
 
