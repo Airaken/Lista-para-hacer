@@ -1,13 +1,7 @@
 const express = require('express')
 const app = express();
 const { Pool, Client } = require('pg');
-const client = new Client({
-    user: process.env.PGUSER,
-    host: process.env.PGHOST,
-    database: process.env.OGDATABASE,
-    password: process.env.PGPASSWORD,
-    port: process.env.PGPORT
-});
+const client = require('../config/db');
 const bcrypt = require('bcrypt');
 
 app.post('/usuario', (req, res) => {
@@ -24,7 +18,6 @@ app.post('/usuario', (req, res) => {
         }
         res.json({ ok: true, usuario: response.rows })
         console.log(response.rows);
-        client.end()
     });
 });
 
@@ -40,7 +33,6 @@ app.get('/usuario/correo', (req, res) => {
         }
         res.json({ ok: true, usuario: response.rows })
         console.log(response.rows);
-        client.end()
     });
 });
 

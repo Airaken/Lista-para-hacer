@@ -1,19 +1,12 @@
 const express = require('express')
 const app = express();
-const { Pool, Client } = require('pg');
-const client = new Client({
-    user: process.env.PGUSER,
-    host: process.env.PGHOST,
-    database: process.env.OGDATABASE,
-    password: process.env.PGPASSWORD,
-    port: process.env.PGPORT
-});
-
-
-app.post('/tarea', (req, res) => {
-    const sql = 'INSERT INTO tareas (titulo, descripcion, usuario_id) VALUES($1, $2, $3) RETURNING *'
-    const values = [req.body.titulo, req.body.descripcion, req.body.usuario_id]
-    client.connect();
+const client = require('../config/db')
+const { validateToken } = require('../middlewares/authentication');
+app.post('/task', validateToken, (req, res) => {
+    const sql = 'INSERT INTO tareas (titulo, descripcion, usuario_id) VALUES($1, $2, $3) RETURNING *';
+    let id = req.id
+    console.log(id);
+    const values = [req.body.titulo, req.body.descripcion, id]
     client.query(sql, values, (err, response) => {
         if (err) {
             return res.status(400).json({
@@ -21,15 +14,16 @@ app.post('/tarea', (req, res) => {
                 err
             });
         }
-        res.json({ ok: true, usuario: response.rows })
+        res.json({ ok: true, task: response.rows })
         console.log(response.rows);
         client.end()
     });
 });
 
-app.get('/tareas/usuario', (req, res) => {
-    const sql = "SELECT * FROM tareas WHERE usuario_id = '" + req.body.usuario_id + "'";
-    client.connect();
+app.get('/task', validateToken, (req, res) => {
+    let id = req.id
+
+    const sql = "SELECT * FROM tareas WHERE usuario_id = '" + id + "'";
     client.query(sql, (err, response) => {
         if (err) {
             return res.status(400).json({
@@ -37,8 +31,8 @@ app.get('/tareas/usuario', (req, res) => {
                 err
             });
         }
-        res.json({ ok: true, usuario: response.rows })
         console.log(response.rows);
+        res.json({ ok: true, task: response.rows })
         client.end()
     });
 });
