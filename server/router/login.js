@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 // this method validate login in the web app
 app.post('/login', (req, res) => {
     let body = req.body;
+    client.connect();
     client.query("SELECT * FROM usuarios WHERE correo = '" + body.email + "';", (err, response) => {
         if (err) {
             return res.status(400).json({
@@ -14,11 +15,19 @@ app.post('/login', (req, res) => {
                 err
             });
         }
+        if (!response.rows[0]) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: '(usuario) o contraseña incorrecto'
+                }
+            });
+        }
         if (!bcrypt.compareSync(body.password, response.rows[0].clave)) {
             return res.status(400).json({
                 ok: false,
                 err: {
-                    message: 'usuario o contraseña incorrecto'
+                    message: 'usuario o (contraseña) incorrecto'
                 }
             });
         }
@@ -49,11 +58,11 @@ app.get('/login/user', validateToken, (req, res) => {
     // this method change the token of session to void 
 app.get('/logout', (req, res) => {
         process.env.TOKEN = '';
+        client.end();
         res.json({
             ok: true,
             message: 'logout successful'
         });
-        client.end();
     })
     // exporte module
 module.exports = app;
